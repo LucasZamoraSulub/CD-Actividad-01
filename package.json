@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "scripts": {
       "start": "node index.js",  
-      "test": "mocha tests", 
+      "test": "mocha tests/**/*.js", 
       "regression": "echo 'Pruebas de regresión completadas exitosamente'", 
       "performance": "echo 'Pruebas de rendimiento completadas'" 
     },

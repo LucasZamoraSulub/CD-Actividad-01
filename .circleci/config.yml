@@ -1,64 +1,70 @@
 version: 2.1
 
-# Definimos los trabajos (jobs) que se ejecutarán
 jobs:
-  # Trabajo para compilar o ejecutar el código
-  build:
-    docker:
-      - image: circleci/node:14  # Imagen de Docker con Node.js
-    steps:
-      - checkout
-      - run:
-          name: "Run Hola Mundo Script"
-          command: node index.js  # Ejecuta el código de tu aplicación
-
-  # Trabajo para ejecutar las pruebas unitarias
+  # Job para la ejecución de pruebas unitarias
   test:
     docker:
-      - image: circleci/node:14
+      - image: circleci/node:14 # Usamos la imagen oficial de Node.js para ejecutar pruebas
     steps:
-      - checkout
+      - checkout # Clona el repositorio en la máquina de CircleCI
       - run:
-          name: "Run Unit Tests"
-          command: npm test  # Ejecuta las pruebas unitarias (asegúrate de tenerlas configuradas)
+          name: "Instalar dependencias"
+          command: npm install # Instalar las dependencias necesarias
+      - run:
+          name: "Ejecutar pruebas unitarias"
+          command: npm test # Ejecutar las pruebas definidas en el archivo `package.json`
 
-  # Trabajo para ejecutar las pruebas de regresión
+  # Job para las pruebas de regresión
   regression_tests:
     docker:
-      - image: circleci/node:14
+      - image: circleci/node:14 # Usamos la misma imagen de Node.js
     steps:
       - checkout
       - run:
-          name: "Run Regression Tests"
-          command: npm run regression  # Ejecuta las pruebas de regresión
+          name: "Instalar dependencias"
+          command: npm install
+      - run:
+          name: "Ejecutar pruebas de regresión"
+          command: npm run regression # Comando que ejecuta las pruebas de regresión
 
-  # Trabajo para ejecutar las pruebas de rendimiento
+  # Job para las pruebas de rendimiento
   performance_tests:
     docker:
-      - image: circleci/node:14
+      - image: circleci/node:14 # Usamos la imagen oficial de Node.js para rendimiento
     steps:
       - checkout
       - run:
-          name: "Run Performance Tests"
-          command: npm run performance  # Ejecuta las pruebas de rendimiento
+          name: "Instalar dependencias"
+          command: npm install
+      - run:
+          name: "Ejecutar pruebas de rendimiento"
+          command: npm run performance # Comando que ejecuta las pruebas de rendimiento
 
-  # Trabajo para realizar el despliegue en producción
+  # Job para el despliegue a preproducción (solo un ejemplo, no se hace despliegue real)
   deploy:
     docker:
       - image: circleci/node:14
     steps:
       - checkout
       - run:
-          name: "Deploy to Production"
-          command: echo "Desplegando a producción..."  # Aquí iría tu comando real para despliegue
+          name: "Instalar dependencias"
+          command: npm install
+      - run:
+          name: "Simular despliegue"
+          command: echo "Despliegue realizado en preproducción"
 
-# Flujo de trabajo que ejecuta los jobs en el orden adecuado
 workflows:
   version: 2
-  test_deploy_workflow:
+  # Definimos el flujo de trabajo que ejecutará los trabajos en el orden deseado
+  build_and_deploy:
     jobs:
-      - build
-      - test
-      - regression_tests
-      - performance_tests
-      - deploy  # Despliegue solo después de pasar las pruebas
+      - test # Primero se ejecutan las pruebas unitarias
+      - regression_tests:
+          requires:
+            - test # Las pruebas de regresión dependen de que las pruebas unitarias pasen
+      - performance_tests:
+          requires:
+            - regression_tests # Las pruebas de rendimiento dependen de las de regresión
+      - deploy:
+          requires:
+            - performance_tests # El despliegue depende de que las pruebas de rendimiento pasen
