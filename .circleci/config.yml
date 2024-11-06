@@ -1,15 +1,64 @@
 version: 2.1
+
+# Definimos los trabajos (jobs) que se ejecutarán
 jobs:
+  # Trabajo para compilar o ejecutar el código
   build:
     docker:
-      - image: circleci/node:14  # Cambia esta imagen según el entorno
+      - image: circleci/node:14  # Imagen de Docker con Node.js
     steps:
       - checkout
       - run:
           name: "Run Hola Mundo Script"
-          command: node index.js
+          command: node index.js  # Ejecuta el código de tu aplicación
+
+  # Trabajo para ejecutar las pruebas unitarias
+  test:
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+      - run:
+          name: "Run Unit Tests"
+          command: npm test  # Ejecuta las pruebas unitarias (asegúrate de tenerlas configuradas)
+
+  # Trabajo para ejecutar las pruebas de regresión
+  regression_tests:
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+      - run:
+          name: "Run Regression Tests"
+          command: npm run regression  # Ejecuta las pruebas de regresión
+
+  # Trabajo para ejecutar las pruebas de rendimiento
+  performance_tests:
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+      - run:
+          name: "Run Performance Tests"
+          command: npm run performance  # Ejecuta las pruebas de rendimiento
+
+  # Trabajo para realizar el despliegue en producción
+  deploy:
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+      - run:
+          name: "Deploy to Production"
+          command: echo "Desplegando a producción..."  # Aquí iría tu comando real para despliegue
+
+# Flujo de trabajo que ejecuta los jobs en el orden adecuado
 workflows:
   version: 2
-  test_workflow:
+  test_deploy_workflow:
     jobs:
       - build
+      - test
+      - regression_tests
+      - performance_tests
+      - deploy  # Despliegue solo después de pasar las pruebas

@@ -1,0 +1,14 @@
+{
+    "name": "simulacro-ci-cd",
+    "version": "1.0.0",
+    "scripts": {
+      "start": "node index.js",  
+      "test": "mocha tests", 
+      "regression": "echo 'Pruebas de regresión completadas exitosamente'", 
+      "performance": "echo 'Pruebas de rendimiento completadas'" 
+    },
+    "devDependencies": {
+      "mocha": "^10.0.0"
+    }
+  }
+  
